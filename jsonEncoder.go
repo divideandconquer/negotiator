@@ -1,7 +1,7 @@
 package negotiator
 
 import (
-	"encoding/xml"
+	"encoding/json"
 )
 
 type JsonEncoder struct {
