@@ -16,6 +16,6 @@ func (xe XmlEncoder) Encode(data interface{}) ([]byte, error) {
 	}
 }
 
-func (js JsonEncoder) ContentType() string {
+func (xe XmlEncoder) ContentType() string {
 	return "application/xml; charset=utf-8"
 }

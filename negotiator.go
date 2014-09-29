@@ -37,7 +37,7 @@ func (cn ContentNegotiator) Negotiate(req *http.Request, data interface{}) ([]by
 }
 
 // getEncoder parses the Accept header an returns the appropriate encoder to use
-func (cn ContentNegotiator) getEncoder(req *http.Request) {
+func (cn ContentNegotiator) getEncoder(req *http.Request) Encoder {
 	var result = cn.DefaultEncoder
 	accept := req.Header.Get("Accept")
 	if strings.Contains(accept, MimeXML) {
