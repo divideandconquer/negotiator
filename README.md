@@ -9,7 +9,7 @@ from the `net/http` request and encode the given data appropriately.
 
 ### General 
 
-For general usage i.e. non-martini use, simply import the package, create a
+For general usage, i.e. non-martini use, simply import the package, create a
 `ContentNegotiator` object, and call Negotiate:
 
 ```go
@@ -59,4 +59,11 @@ router.Get("/", func(r *http.Request, neg negotiator.Negotiator) (int, []byte) {
 	data := ... //setup whatever data you want to return
 	return http.StatusOK, negotiator.Must(neg.Negotiate(r, data)))
 }
+```
+
+# License
+This module is licensed using the Apache-2.0 License:
+
+```
+Copyright (c) 2014, Kyle Boorky
 ```
