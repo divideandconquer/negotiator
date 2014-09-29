@@ -1,6 +1,6 @@
 # Negotiator
 
-This is a simple golang content negotiation library that was built as a  
+This is a simple golang content negotiation library that was built as a
 [Martini](http://martini.codegangsta.io/) middleware/handler but can be used 
 standalone as well. The ContentNegotiator object will read the accept header 
 from the `net/http` request and encode the given data appropriately.
