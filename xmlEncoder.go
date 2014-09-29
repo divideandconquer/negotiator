@@ -15,3 +15,7 @@ func (xe XmlEncoder) Encode(data interface{}) ([]byte, error) {
 		return xml.Marshal(data)
 	}
 }
+
+func (js JsonEncoder) ContentType() string {
+	return "application/xml; charset=utf-8"
+}

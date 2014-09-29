@@ -15,3 +15,7 @@ func (je JsonEncoder) Encode(data interface{}) ([]byte, error) {
 		return json.Marshal(data)
 	}
 }
+
+func (js JsonEncoder) ContentType() string {
+	return "application/json; charset=utf-8"
+}
