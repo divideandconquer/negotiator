@@ -2,8 +2,12 @@
 
 This is a simple golang content negotiation library that was built as a
 [Martini](http://martini.codegangsta.io/) middleware/handler but can be used 
-standalone as well. The ContentNegotiator object will read the accept header 
+standalone as well. The ContentNegotiator object will read the `Accept` header 
 from the `net/http` request and encode the given data appropriately.
+
+## Supported Content-Types
+* application/json
+* application/xml
 
 ## Usage
 
