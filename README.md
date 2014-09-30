@@ -16,15 +16,15 @@ mimetype can be added dynamically.
 ## Usage
 
 To use the built in JSON and XML encoders use the `NewJsonXmlContentNegotiator`
-function to create the negotiator.  If you want to add additional encoders you
+function to create the `ContentNegotiator`.  If you want to add additional encoders you
 can create your own and add them to the negotiator via the `AddEncoder` function
 as long as they implement the `Encoder` interface.
 
 If you dont want JSON and XML support use the `NewContentNegotiator` function
-to create a base negotiator.  This negotiator will need at least one Encoder to
-function you can add encoders to this using the `AddEncoder` function just as above.
+to create a base `ContentNegotiator`.  This negotiator will need at least one Encoder
+to function. You can add encoders to this using the `AddEncoder` function as seen
+in the example below.
 
-E.G.
 
 ```go
 // Don't want to support XML? Use the following lines:
@@ -47,16 +47,15 @@ import (
 )
 
 func main() {
-	w := http.ResponseWriter{}
-	r := http.Request{}
-
+	...
+	
 	output := ... //some struct of data
 
 	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
-	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{prettyPrint}, w, false)
+	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{prettyPrint}, responseWriter, false)
 	// To add your own mimetypes and encoders use the AddEncoder function:
 	//cn.AddEncoder("text/html", htmlEncoder)
-	log.Println(cn.Negotiate(r, output))
+	log.Println(cn.Negotiate(request, output))
 }
 
 ```
