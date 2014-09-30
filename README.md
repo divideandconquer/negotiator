@@ -16,21 +16,50 @@ mimetype can be added dynamically.
 ## Usage
 
 To use the built in JSON and XML encoders use the `NewJsonXmlContentNegotiator`
-function to create the `ContentNegotiator`.  If you want to add additional encoders you
-can create your own and add them to the negotiator via the `AddEncoder` function
-as long as they implement the `Encoder` interface.
+function to create the `ContentNegotiator`.  
 
 If you dont want JSON and XML support use the `NewContentNegotiator` function
 to create a base `ContentNegotiator`.  This negotiator will need at least one Encoder
 to function. You can add encoders to this using the `AddEncoder` function as seen
 in the example below.
 
-
 ```go
 // Don't want to support XML? Use the following lines:
 cn := negotiator.NewContentNegotiator(defaultEncoder, responseWriter)
 cn.AddEncoder("application/json", negotiator.JsonEncoder{true})
 ```
+
+### Creating Encoders
+
+If you want to add support for additional mimetypes simple create a struct
+that implements the `Encoder` interface.  Use the skeleton below as a starting
+point.
+
+```go
+package main
+
+type FooEncoder struct {}
+
+func (foo FooEncoder) Encode(data interface{}) ([]byte, error) {
+	// encode the data and return a byte array
+}
+
+// ContentType returns the string that will be used
+// for the Content-Type header on the response
+func (js JsonEncoder) ContentType() string {
+	//return the appropriate Content-Type header string
+	//return "application/foo; charset=utf-8"
+}
+```
+Once you have an encoder add it to the content negotiator with the `AddEncoder`
+function:
+
+```go
+// Pass in the Accept header string to respond to and the encoder itself
+cn.AddEncoder("application/foo", FooEncoder{})
+```
+Now if the client sends an `Accepts` header of `application/foo` the `FooEncoder`
+will be used to encode the response.
 
 ### General 
 
