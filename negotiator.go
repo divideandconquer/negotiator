@@ -20,18 +20,27 @@ type Negotiator interface {
 	Negotiate(req *http.Request, data interface{}) ([]byte, error)
 }
 
-// ContentNegotiator is a Neotiator that supports pretty printing
-// and a fallback/default encoder as well as dynamically adding
-// encoders
+// ContentNegotiator is a Neotiator that supports a fallback/default
+// encoder as well as dynamically adding encoders
 type ContentNegotiator struct {
-	PrettyPrint    bool
 	DefaultEncoder Encoder
 	ResponseWriter http.ResponseWriter
 	encoderMap     map[string]Encoder
 }
 
-func NewJsonXmlContentNegotiator(prettyPrint bool, defaultEncoder Encoder, responseWriter http.ResponseWriter) ContentNegotiator {
-	result := ContentNegotiator{prettyPrint, defaultEncoder, responseWriter}
+// NewContentNegotiator creates a basic ContentNegotiator with out any attached
+// encoders
+func NewContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter) ContentNegotiator {
+	result := ContentNegotiator{}
+	result.DefaultEncoder = defaultEncoder
+	result.ResponseWriter = responseWriter
+	return result
+}
+
+// NewJsonXmlContentNegotiator creates a basic ContentNegotiator and attaches
+// a JSON and an XML encoder to it.
+func NewJsonXmlContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter, prettyPrint bool) ContentNegotiator {
+	result := NewContentNegotiator(defaultEncoder, responseWriter)
 	result.AddEncoder(MimeJSON, JsonEncoder{prettyPrint})
 	result.AddEncoder(MimeXML, XmlEncoder{prettyPrint})
 	return result
