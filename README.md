@@ -2,7 +2,7 @@
 
 This is a simple golang content negotiation library that was built as a
 [Martini](http://martini.codegangsta.io/) middleware/handler but can be used 
-standalone as well. The ContentNegotiator object will read the `Accept` header 
+standalone as well. The ContentNegotiator object will read the `Accepts` header 
 from the `net/http` request and encode the given data appropriately.
 
 ## Supported Content-Types
@@ -55,7 +55,7 @@ Once you have an encoder add it to the content negotiator with the `AddEncoder`
 function:
 
 ```go
-// Pass in the Accept header string to respond to and the encoder itself
+// Pass in the Accepts header string to respond to and the encoder itself
 cn.AddEncoder("application/foo", FooEncoder{})
 ```
 Now if the client sends an `Accepts` header of `application/foo` the `FooEncoder`
@@ -81,7 +81,7 @@ func main() {
 	output := ... //some struct of data
 
 	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
-	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{prettyPrint}, responseWriter, false)
+	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{false}, responseWriter, false)
 	// To add your own mimetypes and encoders use the AddEncoder function:
 	//cn.AddEncoder("text/html", htmlEncoder)
 	log.Println(cn.Negotiate(request, output))
