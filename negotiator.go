@@ -60,6 +60,9 @@ func (cn ContentNegotiator) Negotiate(req *http.Request, data interface{}) ([]by
 // AddEncoder registers a mimetype and its encoder to be used if a client
 // requests that mimetype
 func (cn ContentNegotiator) AddEncoder(mimeType string, enc Encoder) {
+	if cn.encoderMap == nil {
+		cn.encoderMap = make(map[string]Encoder)
+	}
 	cn.encoderMap[mimeType] = enc
 }
 
