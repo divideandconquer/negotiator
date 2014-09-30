@@ -25,6 +25,74 @@ to create a base `ContentNegotiator`.  This negotiator will need at least one `E
 to function. You can add encoders to this using the `AddEncoder` function as seen
 in the examples below.
 
+### General 
+
+For general usage, i.e. non-martini use, simply import the package, create a
+`ContentNegotiator` object, and call `Negotiate`:
+
+```go
+package main
+
+import (
+	"github.com/divideandconquer/negotiator"
+	"net/http"
+	"log"
+)
+
+func main() {
+	...
+	
+	output := ... //some struct of data
+
+	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
+	fallbackEncoder := negotiator.JsonEncoder{false}
+	cn := negotiator.NewJsonXmlContentNegotiator(fallbackEncoder, responseWriter, false)
+	// To add your own mime types and encoders use the AddEncoder function:
+	//cn.AddEncoder("text/html", htmlEncoder)
+	log.Println(cn.Negotiate(request, output))
+}
+```
+If you don't want to support XML you can use `NewContentNegotiator` instead:
+
+```go
+// Don't want to support XML? Use the following lines:
+cn := negotiator.NewContentNegotiator(defaultEncoder, responseWriter)
+cn.AddEncoder("application/json", negotiator.JsonEncoder{true})
+```
+
+### Martini
+
+For use with the [Martini](http://martini.codegangsta.io/) framework add the content
+negotiator to the list of middlewares to use:
+
+```go
+//Martini initialization
+m = martini.New()
+
+// add middleware
+m.Use(martini.Recovery())
+m.Use(martini.Logger())
+
+// setup content negotiation
+m.Use(func(c martini.Context, w http.ResponseWriter) {
+	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
+	fallbackEncoder := negotiator.JsonEncoder{false}
+	cn := negotiator.NewJsonXmlContentNegotiator(fallbackEncoder, w, false)
+
+	// To add your own mime types and encoders use the AddEncoder function:
+	//cn.AddEncoder("text/html", htmlEncoder)
+	
+	c.MapTo(cn, (*negotiator.Negotiator)(nil))
+})
+
+// setup router
+router := martini.NewRouter()
+router.Get("/", func(r *http.Request, neg negotiator.Negotiator) (int, []byte) {
+	data := ... //setup whatever data you want to return
+	return http.StatusOK, negotiator.Must(neg.Negotiate(r, data)))
+}
+```
+
 ### Creating Encoders
 
 If you want to add support for additional mime types simple create a struct
@@ -57,72 +125,6 @@ cn.AddEncoder("application/foo", FooEncoder{})
 ```
 Now if the client sends an `Accepts` header of `application/foo` the `FooEncoder`
 will be used to encode the response.
-
-### General 
-
-For general usage, i.e. non-martini use, simply import the package, create a
-`ContentNegotiator` object, and call `Negotiate`:
-
-```go
-package main
-
-import (
-	"github.com/divideandconquer/negotiator"
-	"net/http"
-	"log"
-)
-
-func main() {
-	...
-	
-	output := ... //some struct of data
-
-	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
-	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{false}, responseWriter, false)
-	// To add your own mime types and encoders use the AddEncoder function:
-	//cn.AddEncoder("text/html", htmlEncoder)
-	log.Println(cn.Negotiate(request, output))
-}
-```
-If you don't want to support XML you can use `NewContentNegotiator` instead:
-
-```go
-// Don't want to support XML? Use the following lines:
-cn := negotiator.NewContentNegotiator(defaultEncoder, responseWriter)
-cn.AddEncoder("application/json", negotiator.JsonEncoder{true})
-```
-
-### Martini
-
-For use with the [Martini](http://martini.codegangsta.io/) framework add the content
-negotiator to the list of middlewares to use:
-
-```go
-//Martini initialization
-m = martini.New()
-
-// add middleware
-m.Use(martini.Recovery())
-m.Use(martini.Logger())
-
-// setup content negotiation
-m.Use(func(c martini.Context, w http.ResponseWriter) {
-	// This creates a content negotiator can handle JSON and XML, defaults to json, and doesn't pretty print
-	cn := negotiator.NewJsonXmlContentNegotiator(negotiator.JsonEncoder{false}, w, false)
-
-	// To add your own mime types and encoders use the AddEncoder function:
-	//cn.AddEncoder("text/html", htmlEncoder)
-	
-	c.MapTo(cn, (*negotiator.Negotiator)(nil))
-})
-
-// setup router
-router := martini.NewRouter()
-router.Get("/", func(r *http.Request, neg negotiator.Negotiator) (int, []byte) {
-	data := ... //setup whatever data you want to return
-	return http.StatusOK, negotiator.Must(neg.Negotiate(r, data)))
-}
-```
 
 # License
 This module is licensed using the Apache-2.0 License:
