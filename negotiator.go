@@ -10,7 +10,6 @@ const MimeXML = "application/xml"
 
 // Encoder is an interface for a struct that can encode data into []byte
 type Encoder interface {
-	PrettyPrint bool
 	Encode(data interface{}) ([]byte, error)
 	ContentType() string
 }
