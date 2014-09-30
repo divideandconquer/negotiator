@@ -30,8 +30,8 @@ type ContentNegotiator struct {
 
 // NewContentNegotiator creates a basic ContentNegotiator with out any attached
 // encoders
-func NewContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter) ContentNegotiator {
-	result := ContentNegotiator{}
+func NewContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter) *ContentNegotiator {
+	result := &ContentNegotiator{}
 	result.DefaultEncoder = defaultEncoder
 	result.ResponseWriter = responseWriter
 	return result
@@ -39,7 +39,7 @@ func NewContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWr
 
 // NewJsonXmlContentNegotiator creates a basic ContentNegotiator and attaches
 // a JSON and an XML encoder to it.
-func NewJsonXmlContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter, prettyPrint bool) ContentNegotiator {
+func NewJsonXmlContentNegotiator(defaultEncoder Encoder, responseWriter http.ResponseWriter, prettyPrint bool) *ContentNegotiator {
 	result := NewContentNegotiator(defaultEncoder, responseWriter)
 	result.AddEncoder(MimeJSON, JsonEncoder{prettyPrint})
 	result.AddEncoder(MimeXML, XmlEncoder{prettyPrint})
@@ -48,7 +48,7 @@ func NewJsonXmlContentNegotiator(defaultEncoder Encoder, responseWriter http.Res
 
 // Negotiate inspects the request for the accept header and
 // encodes the response appropriately.
-func (cn ContentNegotiator) Negotiate(req *http.Request, data interface{}) ([]byte, error) {
+func (cn *ContentNegotiator) Negotiate(req *http.Request, data interface{}) ([]byte, error) {
 	if len(cn.encoderMap) <= 0 {
 		panic("No Encoders present. Please add them using ContentNegotiator.AddEncoder()")
 	}
@@ -59,7 +59,7 @@ func (cn ContentNegotiator) Negotiate(req *http.Request, data interface{}) ([]by
 
 // AddEncoder registers a mimetype and its encoder to be used if a client
 // requests that mimetype
-func (cn ContentNegotiator) AddEncoder(mimeType string, enc Encoder) {
+func (cn *ContentNegotiator) AddEncoder(mimeType string, enc Encoder) {
 	if cn.encoderMap == nil {
 		cn.encoderMap = make(map[string]Encoder)
 	}
@@ -67,7 +67,7 @@ func (cn ContentNegotiator) AddEncoder(mimeType string, enc Encoder) {
 }
 
 // getEncoder parses the Accept header an returns the appropriate encoder to use
-func (cn ContentNegotiator) getEncoder(req *http.Request) Encoder {
+func (cn *ContentNegotiator) getEncoder(req *http.Request) Encoder {
 	var result = cn.DefaultEncoder
 	accept := req.Header.Get("Accept")
 
